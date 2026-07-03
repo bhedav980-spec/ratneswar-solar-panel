@@ -1,12 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ratneswar Solar Dashboard</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/App.tsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ratneswar Engineering - Solar ERP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #020617; color: #e2e8f0; font-family: system-ui, -apple-system, sans-serif; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <div id="login-container" class="flex flex-1 items-center justify-center px-4">
+        <div class="w-full max-w-md space-y-5 rounded-2xl border border-slate-800 bg-slate-900/50 p-8 shadow-xl backdrop-blur-md">
+            <div class="text-center">
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">RATNESWAR ENGINEERING</h2>
+                <p class="text-xs text-slate-400 mt-1">Solar ERP Gateway Security Portal</p>
+            </div>
+            <div class="space-y-2">
+                <label class="text-xs font-semibold text-slate-400 uppercase">Username ID</label>
+                <input type="text" id="username" class="w-full rounded-lg border border-slate-800 bg-slate-950 px-4 py-2.5 text-white focus:border-amber-500 focus:outline-none" placeholder="admin">
+            </div>
+            <div class="space-y-2">
+                <label class="text-xs font-semibold text-slate-400 uppercase">Security Password</label>
+                <input type="password" id="password" class="w-full rounded-lg border border-slate-800 bg-slate-950 px-4 py-2.5 text-white focus:border-amber-500 focus:outline-none" placeholder="••••••••">
+            </div>
+            <button onclick="handleLogin()" class="w-full rounded-lg bg-amber-500 py-3 font-bold text-slate-950 transition hover:bg-amber-400">Authenticate Security Token</button>
+        </div>
+    </div>
+
+    <div id="dashboard-container" class="hidden min-h-screen p-6 md:p-10 space-y-8 w-full">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-800 pb-6">
+            <div>
+                <h1 class="text-3xl font-black text-white tracking-tight">RATNESWAR ENGINEERING</h1>
+                <p class="text-sm text-amber-400 font-medium">Residential Rooftop Live Price Configurator Matrix (2026)</p>
+            </div>
+            <button onclick="handleLogout()" class="px-4 py-2 border border-slate-800 hover:border-red-500 rounded-lg text-xs font-semibold transition text-slate-400 hover:text-red-400">Disconnect Session</button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-1 bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-6 h-fit">
+                <h3 class="text-lg font-bold text-white border-b border-slate-800 pb-2">System Configurator</h3>
+                
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-400 uppercase">Technology Model</label>
+                    <select id="techType" onchange="updatePanelsDropdown()" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500">
+                        <option value="BIFACIAL">BIFACIAL (530 - 550 WP)</option>
+                        <option value="TOPCON">TOPCON (560 - 620 WP)</option>
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-400 uppercase">Panel Count Amount</label>
+                    <select id="panels" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500">
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-400 uppercase">Hardware OEM Brand Ecosystem</label>
+                    <select id="brandSelection" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500">
+                        <option value="waaree">Waaree Solar Bifacial/Topcon Tier</option>
+                        <option value="adani">Adani Solar Modules</option>
+                        <option value="aps">APS Micro Inverter Array Setup</option>
+                    </select>
+                </div>
+
+                <div class="border-t border-slate-800 pt-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-bold text-slate-400 uppercase">Apply Bank Loan Tracking</label>
+                        <input type="checkbox" id="loanClause" onchange="toggleLoanInput()" class="h-4 w-4 rounded bg-slate-950 border-slate-800 accent-amber-500">
+                    </div>
+                    <div id="loanAmountContainer" class="hidden">
+                        <input type="number" id="loanInputAmount" placeholder="Enter disbursed loan value amount" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 font-mono text-white focus:border-amber-500 focus:outline-none text-sm">
+                    </div>
+                </div>
+
+                <button onclick="processCalculations()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl transition shadow-lg tracking-wide text-sm">Generate Systems Engineering Output</button>
+            </div>
+
+            <div class="lg:col-span-2 bg-slate-900/30 border border-slate-800 rounded-2xl p-6 min-h-[450px] flex flex-col justify-between">
+                <div id="empty-state" class="my-auto text-center py-12 text-slate-500 text-sm border-2 border-dashed border-slate-800 rounded-xl p-8">
+                    Aap Configurator Form mein values select karke button par click karein. Aapka exact print-ready quotation bill yahaan load ho jayega.
+                </div>
+
+                <div id="print-area" class="hidden space-y-6 bg-slate-950 border border-slate-800 rounded-xl p-6 text-slate-300">
+                    <div class="flex justify-between border-b border-slate-800 pb-4">
+                        <div>
+                          <h4 class="text-xl font-black text-white tracking-tight">RATNESWAR ENGINEERING</h4>
+                          <p class="text-[10px] text-slate-500">GSTIN: 24ABKFR8021K1ZZ | Rapar-Kutch</p>
+                        </div>
+                        <div class="text-right text-xs font-mono">
+                          <p class="text-amber-400 font-bold">INVOICE: RE-2026-0092</p>
+                          <p class="text-slate-500 text-[10px] mt-1">System Generated Live Slip</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 text-xs bg-slate-900/50 p-3 rounded-lg border border-slate-800">
+                        <div>
+                            <p class="text-slate-500 font-bold uppercase tracking-wider text-[9px]">Client Profile</p>
+                            <p class="text-white font-medium text-sm mt-0.5">Hajam Mahebubbhai</p>
+                            <p class="text-slate-400">Rapar-Kutch (PGVCL)</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-slate-500 font-bold uppercase tracking-wider text-[9px]">Technical Scope</p>
+                            <p id="outKw" class="text-white font-mono font-bold text-sm mt-0.5">-- kW</p>
+                            <p id="outBrand" class="text-slate-400">--</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h5 class="text-xs font-bold text-white mb-2 uppercase tracking-wide">Financial Settlement Breakdown</h5>
+                        <div class="space-y-2 text-xs bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono">
+                          <div class="flex justify-between"><span>Base Rate Plan (Includes Installation):</span><span id="outBasePrice" class="text-white">₹0.00</span></div>
+                          <div id="loanTaxRow" class="hidden flex justify-between text-red-400"><span>(+) Corporate 8.9% Bank Loan Surcharge Tax Clause:</span><span id="outLoanTax">₹0.00</span></div>
+                          <div class="flex justify-between border-t border-slate-800 pt-2 text-sm font-bold text-white"><span>Net Payable From Consumer:</span><span id="outNetTotal" class="text-emerald-400">₹0.00</span></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h5 class="text-xs font-bold text-white mb-2 uppercase tracking-wide">Allocated Structural Engineering Bill of Materials (BOM)</h5>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-mono">
+                          <div class="bg-slate-900/40 p-2 rounded border border-slate-800">Structure Pipe 40x40: <span id="outP40" class="text-white font-bold">-- Pcs</span></div>
+                          <div class="bg-slate-900/40 p-2 rounded border border-slate-800">Structure Pipe 60x40: <span id="outP60" class="text-white font-bold">-- Pcs</span></div>
+                          <div class="bg-slate-900/40 p-2 rounded border border-slate-800 sm:col-span-2">DC Cable Specification Line: <span class="text-amber-400 font-bold">4 MM SQ (40 Meters Vector Bundle)</span></div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-2">
+                        <button onclick="window.print()" class="rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white font-bold px-4 py-2 text-xs transition">Print System Invoice Document</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
 </html>
